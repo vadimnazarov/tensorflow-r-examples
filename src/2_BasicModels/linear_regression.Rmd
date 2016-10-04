@@ -28,7 +28,7 @@ library(ggplot2)
 ```{r params}
 set.seed(20)
 learning_rate = 0.1
-training_epochs = 100
+training_epochs = 1000
 verbose_step = 50
 ```
 
