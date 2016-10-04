@@ -80,16 +80,16 @@ init = tf$initialize_all_variables()
 with(tf$Session() %as% sess, {
   sess$run(init)
   
-  #### For every epoch
+  # For every epoch
   for (epoch in 1:training_epochs) {
-    #### Fit all training data
+    # Fit all training data
     for (i in 1:n_samples) {
       sess$run(optim_fun, feed_dict = dict(x = x_data[i], y = y_data[i]))
     }
     
-    if ((epoch + 1) %% verbose_step == 0) {
+    if (epoch %% verbose_step == 0) {
       loss_val = sess$run(loss_fun, feed_dict = dict(x = x_data, y = y_data))
-      cat(paste0("Epoch: ", format(epoch+1, width = 4), 
+      cat(paste0("Epoch: ", format(epoch, width = 4), 
                  " loss=", format(loss_val, width = 10), 
                  " W=", format(sess$run(W), width = 8), 
                  " b=", format(sess$run(b), 8), "\n"))
