@@ -30,39 +30,41 @@ library(ggplot2)
 ```{r params}
 set.seed(20)
 learning_rate = 0.1
-training_epochs = 1000
-verbose_step = 50
+training_epochs = 25
+batch_size = 100
+test_size = 3000
+n_features = 784L
+n_classes = 10L
+verbose_step = 1
 ```
 
 #### Training data
 ```{r data}
-x_data = c(3.3,4.4,5.5,6.71,6.93,4.168,9.779,6.182,7.59,2.167,
-           7.042,10.791,5.313,7.997,5.654,9.27,3.1)
-y_data = c(1.7,2.76,2.09,3.19,1.694,1.573,3.366,2.596,2.53,1.221,
-           2.827,3.465,1.65,2.904,2.42,2.94,1.3)
-n_samples = length(x_data)
+input_data = tf$contrib$learn$datasets$mnist
+mnist = input_data$read_data_sets("./tmp/data", one_hot = T)
+list.files("./tmp/data")
 ```
 
 #### TensorFlow graph input
 ```{r input}
-x = tf$placeholder(tf$float32)
-y = tf$placeholder(tf$float32)
+x = tf$placeholder(tf$float32, shape(NULL, n_features))
+y = tf$placeholder(tf$float32, shape(NULL, n_classes))
 ```
 
 #### Initial weights for the model
 ```{r weights}
-W = tf$Variable(tf$random_uniform(shape(1L), -1.0, 1.0), name = "weight")
-b = tf$Variable(tf$zeros(shape(1L)), name = "bias")
+W = tf$Variable(tf$zeros(shape(n_features, n_classes)))
+b = tf$Variable(tf$zeros(shape(n_classes)))
 ```
 
-#### Linear model description
+#### Logistic model description
 ```{r model}
-lr_model = tf$mul(W, x) + b
+lr_model = tf$nn$softmax(tf$matmul(x, W) + b)
 ```
 
-#### Loss function - mean squared error
+#### Loss function - cross entropy
 ```{r loss}
-loss_fun = tf$reduce_sum((lr_model - y) ^ 2) / (2 * n_samples)
+loss_fun = tf$reduce_mean(-tf$reduce_sum(y * tf$log(lr_model), reduction_indices = 1L))
 ```
 
 #### Optimisation using the gradient descent algorithm
@@ -75,45 +77,35 @@ optim_fun = tf$train$GradientDescentOptimizer(learning_rate)$minimize(loss_fun)
 init = tf$initialize_all_variables()
 ```
 
-#### Launch the graph and plot the result
-```{r run, fig.align="center"}
+#### Launch the graph and print the resulting accuracy
+```{r run}
 with(tf$Session() %as% sess, {
   sess$run(init)
   
-  #### For every epoch
+  # For every epoch
   for (epoch in 1:training_epochs) {
-    #### Fit all training data
-    for (i in 1:n_samples) {
-      sess$run(optim_fun, feed_dict = dict(x = x_data[i], y = y_data[i]))
+    avg_loss = .0
+    total_batch = as.integer(mnist$train$num_examples / batch_size)
+    # For every batch
+    for (i in 1:total_batch) {
+      # Fit a subset of the data
+      batch_data = mnist$train$next_batch(total_batch)
+      sess$run(optim_fun, feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]]))
+      cur_loss = sess$run(loss_fun, feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]]))
+      avg_loss = avg_loss + cur_loss / total_batch
     }
     
-    if ((epoch + 1) %% verbose_step == 0) {
-      loss_val = sess$run(loss_fun, feed_dict = dict(x = x_data, y = y_data))
-      cat(paste0("Epoch: ", format(epoch+1, width = 4), 
-                 " loss=", format(loss_val, width = 10), 
-                 " W=", format(sess$run(W), width = 8), 
-                 " b=", format(sess$run(b), 8), "\n"))
+    if (epoch %% verbose_step == 0) {
+      cat(paste0("Epoch: ", format(epoch, width = 2), 
+                 " avg.loss=", format(avg_loss, width = 10)), "\n")
     }
   }
   
-  training_loss = sess$run(loss_fun, feed_dict = dict(y = x_data, x = y_data))
-  cat(paste0("Resulting loss=", format(training_loss, width = 10), 
-             " W=", format(sess$run(W), width = 8), 
-             " b=", format(sess$run(b), 8), "\n"))
-  
-  df = data.frame(X = x_data, Y = y_data)
-  
-  x_start = min(x_data)
-  x_end   = max(x_data)
-  y_start = sess$run(W) * x_start + sess$run(b)
-  y_end   = sess$run(W) * x_end + sess$run(b)
-  
-  ggplot() + 
-    geom_point(aes(x = X, y = Y), data = df) + 
-    geom_segment(aes(x = x_start, 
-                 xend = x_end,
-                 y = y_start,
-                 yend = y_end)) +
-  theme_bw()
+  training_loss = sess$run(loss_fun, feed_dict = dict(x = mnist$test$images[1:test_size, ], y = mnist$test$labels[1:test_size, ]))
+  cat(paste0("Overall loss=", format(training_loss, width = 10)), "\n")
+
+  corr_pred = tf$equal(tf$argmax(lr_model, 1L), tf$argmax(y, 1L))
+  acc = tf$reduce_mean(tf$cast(corr_pred, tf$float32))
+  cat("Accuracy: ", acc$eval(dict(x = mnist$test$images[1:test_size, ], y = mnist$test$labels[1:test_size, ])), "\n")
 })
 ```
