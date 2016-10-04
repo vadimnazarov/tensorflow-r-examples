@@ -23,7 +23,6 @@ Installation instructions for TensorFlow R package: [link](https://rstudio.githu
 #### Libraries
 ```{r libs}
 library(tensorflow)
-library(ggplot2)
 ```
 
 #### Parameters
