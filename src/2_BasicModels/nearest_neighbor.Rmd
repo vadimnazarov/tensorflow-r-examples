@@ -1,0 +1,93 @@
+---
+title: '<center> <h1>Nearest neighbor model in R using TensorFlow</h1></center>'
+author: '<center> <h3>Vadim I. Nazarov</h3> </center> <center> <h4><vdm.nazarov@gmail.com></h4> </center>'
+output: 
+  html_document: 
+    theme: spacelab
+---
+
+#### Preface
+This is an R version of the wonderful TensorFlow example made by [Aymeric Damien](https://github.com/aymericdamien) in [this project](https://github.com/aymericdamien/TensorFlow-Examples/).
+
+Original TensorFlow example notebook: [link](https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/2_BasicModels/nearest_neighbor.ipynb)
+
+Code for this document: [link](https://github.com/vadimnazarov/tensorflow-r-examples/2_BasicModels/nearest_neighbor.Rmd)
+
+TensorFlow R examples website: [link](https://vadimnazarov.github.io/tensorflow-r-examples/)
+
+TensorFlow R examples GitHub: [link](https://github.com/vadimnazarov/tensorflow-r-examples/)
+
+#### Installation
+Installation instructions for TensorFlow R package: [link](https://rstudio.github.io/tensorflow/)
+
+#### Libraries
+```{r libs}
+library(tensorflow)
+```
+
+#### Parameters
+```{r params}
+train_size = 5000
+test_size = 200
+n_features = 784L
+```
+
+#### Training data
+```{r data}
+input_data = tf$contrib$learn$datasets$mnist
+mnist = input_data$read_data_sets("./tmp/data", one_hot = T)
+
+train_data = mnist$train$next_batch(train_size)
+x_train = train_data[[1]]
+y_train = train_data[[2]]
+
+test_data = mnist$test$next_batch(test_size)
+x_test = test_data[[1]]
+y_test = test_data[[2]]
+```
+
+#### TensorFlow graph input
+```{r input}
+x_src = tf$placeholder(tf$float32, shape(NULL, n_features))
+x_tgt = tf$placeholder(tf$float32, shape(n_features))
+```
+
+#### Nearest neighbors calculation using L1 distance
+```{r weights}
+distance = tf$reduce_sum(tf$abs(x_src - x_tgt), reduction_indices = 1L)
+# L2 distance will look like this
+# distance = tf$reduce_sum((x_src - x_tgt) ^ 2, reduction_indices = 1L)
+```
+
+#### Nearest neighbors model description
+```{r model}
+nn_model = tf$arg_min(distance, 0L)
+```
+
+#### Initialise all variables
+```{r init}
+init = tf$initialize_all_variables()
+acc = .0
+```
+
+#### Launch the L1 distance graph and print the resulting accuracy
+```{r run}
+with(tf$Session() %as% sess, {
+  sess$run(init)
+  
+  # For every object
+  for (i in 1:nrow(x_test)) {
+    # Get the nearest object's class
+    nn_index = sess$run(nn_model, feed_dict = dict(x_src = x_train, x_tgt = x_test[i,])) + 1
+    pred = which.max(y_train[nn_index, ]) - 1
+    real = which.max(y_test[i, ]) - 1
+    if (pred == real) {
+      acc = acc + 1 / nrow(x_test)
+    } else {
+      cat("test no. ", i, " pred: ", pred, " true: ", real, "\n")
+    }
+  }
+  
+  cat("Accuracy: ", acc, "\n")
+})
+```
