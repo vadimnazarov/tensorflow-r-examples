@@ -1,0 +1,143 @@
+---
+title: '<center> <h1>Autoencoder model in R using TensorFlow</h1></center>'
+author: '<center> <h3>Vadim I. Nazarov</h3> </center> <center> <h4><vdm.nazarov@gmail.com></h4> </center>'
+output: 
+  html_document: 
+    theme: spacelab
+---
+
+#### Preface
+This is an R version of the wonderful TensorFlow example made by [Aymeric Damien](https://github.com/aymericdamien) in [this project](https://github.com/aymericdamien/TensorFlow-Examples/).
+
+Original TensorFlow example notebook: [link](https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/3_NeuralNetworks/autoencoder.ipynb)
+
+Code for this document: [link](https://github.com/vadimnazarov/tensorflow-r-examples/3_NeuralNetworks/autoencoder.Rmd)
+
+TensorFlow R examples website: [link](https://vadimnazarov.github.io/tensorflow-r-examples/)
+
+TensorFlow R examples GitHub: [link](https://github.com/vadimnazarov/tensorflow-r-examples/)
+
+#### Installation
+Installation instructions for TensorFlow R package: [link](https://rstudio.github.io/tensorflow/)
+
+#### Libraries
+```{r libs}
+library(tensorflow)
+```
+
+#### Parameters
+```{r params}
+learning_rate = .001
+n_iters = 20000L
+batch_size = 128L
+dropout = .75
+verbose_step = 100L
+test_size = 1000L
+
+n_features = 784L
+n_classes = 10L
+```
+
+#### Training data
+```{r data}
+input_data = tf$contrib$learn$datasets$mnist
+mnist = input_data$read_data_sets("./tmp/data", one_hot = T)
+```
+
+#### TensorFlow graph input
+```{r input}
+x = tf$placeholder(tf$float32, shape(NULL, n_features))
+y = tf$placeholder(tf$float32, shape(NULL, n_classes))
+keep_prob = tf$placeholder(tf$float32) # dropout
+```
+
+#### Convolutional network model
+```{r model}
+conv2d <- function (x, weights, biases, strides = 1L) {
+  x = tf$nn$conv2d(x, weights, strides = c(1L, strides, strides, 1L), padding = "SAME")
+  x = tf$nn$bias_add(x, biases)
+  tf$nn$relu(x)
+}
+
+maxpool2d <- function (x, k = 2L) {
+  tf$nn$max_pool(x, ksize = c(1L, k, k, 1L), strides = c(1L, k, k, 1L), padding = "SAME")
+}
+
+conv_model <- function (x, weights, biases, dropout) {
+  x = tf$reshape(x, shape = c(-1L, 28L, 28L, 1L))
+  
+  # 1st conv layer + max pool layer
+  res_model = conv2d(x, weights[["wc1"]], biases[["bc1"]])
+  res_model = maxpool2d(res_model, k = 2L)
+  
+  # 2nd conv layer + max pool layer
+  res_model = conv2d(res_model, weights[["wc2"]], biases[["bc2"]])
+  res_model = maxpool2d(res_model, k = 2L)
+  
+  # Dense (fully connected) layer
+  res_model = tf$reshape(res_model, c(-1L, weights[["wd1"]]$get_shape()$as_list()[1]))
+  res_model = tf$matmul(res_model, weights[["wd1"]]) + biases[["bd1"]]
+  res_model = tf$nn$relu(res_model)
+  
+  # Dropout
+  res_model = tf$nn$dropout(res_model, dropout)
+  
+  # Prediction
+  tf$matmul(res_model, weights[["out"]]) + biases[["out"]]
+}
+
+weights = list(wc1 = tf$Variable(tf$random_normal(shape(5L, 5L, 1L, 32L))),  # 5x5 convolution, 1 input, 32 outputs
+               wc2 = tf$Variable(tf$random_normal(shape(5L, 5L, 32L, 64L))), # 5x5 convolution, 32 inputs, 64 outputs
+               wd1 = tf$Variable(tf$random_normal(shape(7*7*64L, 1024L))),  # fully connected, 7*7*64 inputs, 1024 outputs
+               out = tf$Variable(tf$random_normal(shape(1024L, n_classes))))
+
+biases = list(bc1 = tf$Variable(tf$random_normal(shape(32L))), 
+              bc2 = tf$Variable(tf$random_normal(shape(64L))), 
+              bd1 = tf$Variable(tf$random_normal(shape(1024L))),
+              out = tf$Variable(tf$random_normal(shape(n_classes))))
+
+cn_model = conv_model(x, weights, biases, keep_prob)
+```
+
+#### Define loss and optimizer
+```{r loss}
+loss_fun = tf$reduce_mean(tf$nn$softmax_cross_entropy_with_logits(cn_model, y))
+optim_fun = tf$train$AdamOptimizer(learning_rate = learning_rate)$minimize(loss_fun)
+```
+
+#### Model's evaluation
+```{r evaluation}
+y_corr = tf$argmax(cn_model, 1L) == tf$argmax(y, 1L)
+acc_fun = tf$reduce_mean(tf$cast(y_corr, tf$float32))
+```
+
+#### Initialise all variables
+```{r init}
+init = tf$initialize_all_variables()
+acc = .0
+```
+
+#### Launch the L1 distance graph and print the resulting accuracy
+```{r run}
+with(tf$Session() %as% sess, {
+  sess$run(init)
+  
+  step = 1
+  while (step * batch_size < n_iters) {
+    batch_data = mnist$train$next_batch(batch_size)
+    sess$run(optim_fun, feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]], keep_prob = dropout))
+    
+    if (step %% verbose_step == 0) {
+      tmp = sess$run(list(loss_fun, acc_fun), feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]], keep_prob = 1.))
+      loss = tmp[1]
+      acc = tmp[2]
+      cat(paste0("Iter: ", format(step*batch_size, width = 6), 
+               " minibatch loss=", format(loss, width = 10), 
+               " train.acc=", format(acc, width = 6)), "\n")
+    }
+  }
+
+  acc = sess$run(acc_fun, feed_dict = dict(x = mnist$test$images[1:test_size, ], y = mnist$test$labels[1:test_size, ], keep_prob = 1.))
+  cat("Accuracy: ", format(acc, width = 6), "\n")
+})
+```
