@@ -23,6 +23,10 @@ Installation instructions for TensorFlow R package: [link](https://rstudio.githu
 #### Libraries
 ```{r libs}
 library(tensorflow)
+library(ggplot2)
+library(RColorBrewer)
+library(gridExtra)
+library(reshape2)
 ```
 
 #### Parameters
@@ -52,30 +56,24 @@ x = tf$placeholder(tf$float32, shape(NULL, n_features))
 
 #### Autoencoder model
 ```{r model}
-encoder <- function (x, weights, biases) {
-  net = tf$nn$sigmoid(tf$matmul(x, weights[["enc_h1"]]) + biases[["enc_b1"]])
-  net = tf$nn$sigmoid(tf$matmul(net, weights[["enc_h1"]]) + biases[["enc_b1"]])
+xxcoder <- function (x, weights, biases) {
+  net = tf$nn$sigmoid(tf$matmul(x, weights[["h1"]]) + biases[["b1"]])
+  net = tf$nn$sigmoid(tf$matmul(net, weights[["h2"]]) + biases[["b2"]])
   net
 }
 
-decoder <- function (x, weights, biases) {
-  net = tf$nn$sigmoid(tf$matmul(x, weights[["dec_h1"]]) + biases[["dec_b1"]])
-  net = tf$nn$sigmoid(tf$matmul(net, weights[["dec_h1"]]) + biases[["dec_b1"]])
-  net
-}
+weights_enc = list(h1 = tf$Variable(tf$random_normal(shape(n_features, n_hidden_1))),
+                   h2 = tf$Variable(tf$random_normal(shape(n_hidden_1, n_hidden_2))))
+weights_dec = list(h1 = tf$Variable(tf$random_normal(shape(n_hidden_2, n_hidden_1))),
+                   h2 = tf$Variable(tf$random_normal(shape(n_hidden_1, n_features))))
 
-weights = list(enc_h1 = tf$Variable(tf$random_normal(shape(n_features, n_hidden_1))),
-               enc_h2 = tf$Variable(tf$random_normal(shape(n_hidden_1, n_hidden_2))),
-               dec_h1 = tf$Variable(tf$random_normal(shape(n_hidden_2, n_hidden_1))),
-               dec_h1 = tf$Variable(tf$random_normal(shape(n_hidden_1, n_features))))
+biases_enc = list(b1 = tf$Variable(tf$random_normal(shape(n_hidden_1))), 
+                  b2 = tf$Variable(tf$random_normal(shape(n_hidden_2))))
+biases_dec = list(b1 = tf$Variable(tf$random_normal(shape(n_hidden_1))),
+                  b2 = tf$Variable(tf$random_normal(shape(n_features))))
 
-biases = list(enc_h1 = tf$Variable(tf$random_normal(shape(n_hidden_1))), 
-              enc_h1 = tf$Variable(tf$random_normal(shape(n_hidden_2))), 
-              dec_b1 = tf$Variable(tf$random_normal(shape(n_hidden_1))),
-              dec_b1 = tf$Variable(tf$random_normal(shape(n_features))))
-
-enc_model = encoder(x)
-dec_model = decoder(enc_model)
+enc_model = xxcoder(x, weights_enc, biases_enc)
+dec_model = xxcoder(enc_model, weights_dec, biases_dec)
 
 y_pred = dec_model
 y_true = x
@@ -93,26 +91,47 @@ init = tf$initialize_all_variables()
 ```
 
 #### Launch the L1 distance graph and print the resulting accuracy
-```{r run}
+```{r run, fig.align="center", fig.width=16, fig.height=3}
 with(tf$Session() %as% sess, {
   sess$run(init)
   
-  step = 1
-  while (step * batch_size < n_iters) {
-    batch_data = mnist$train$next_batch(batch_size)
-    sess$run(optim_fun, feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]], keep_prob = dropout))
+  n_batches = as.integer(mnist$train$num_examples / batch_size)
+  
+  for (epoch in 1:n_epochs) {
+    for (batch_i in 1:n_batches) {
+      batch_data = mnist$train$next_batch(batch_size)
+      tmp = sess$run(list(loss_fun, optim_fun), feed_dict = dict(x = batch_data[[1]]))
+      loss_val = tmp[1]
     
-    if (step %% verbose_step == 0) {
-      tmp = sess$run(list(loss_fun, acc_fun), feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]], keep_prob = 1.))
-      loss = tmp[1]
-      acc = tmp[2]
-      cat(paste0("Iter: ", format(step*batch_size, width = 6), 
-               " minibatch loss=", format(loss, width = 10), 
-               " train.acc=", format(acc, width = 6)), "\n")
     }
+    
+    if (epoch %% verbose_step == 0) {
+        cat(paste0("Epoch: ", format(epoch, width = 6), 
+                   " loss=", format(loss_val, width = 10)), "\n")
+      }
   }
-
-  acc = sess$run(acc_fun, feed_dict = dict(x = mnist$test$images[1:test_size, ], y = mnist$test$labels[1:test_size, ], keep_prob = 1.))
-  cat("Accuracy: ", format(acc, width = 6), "\n")
+  
+  orig_data = mnist$test$images[1:to_show, ]
+  enc_dec = sess$run(y_pred, feed_dict = dict(x = orig_data))
+  
+  do_plot <- function (.data) {
+    ggplot() + 
+      geom_tile(aes(x = Var1, y = Var2, fill = value), data = .data) + 
+      scale_fill_distiller(palette = "YlGnBu") + 
+      theme_bw() +
+      theme(legend.position = "none",
+            axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
+            axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+      scale_x_discrete(expand = c(0, 0)) +
+      scale_y_discrete(expand = c(0, 0)) + 
+      coord_fixed()
+  }
+  
+  plots = list()
+  for (i in 1:to_show) {
+    plots[[i]] = do_plot(melt(matrix(orig_data[i, ], 28, 28)))
+    plots[[i+to_show]] = do_plot(melt(matrix(enc_dec[i, ], 28, 28)))
+  }
+  do.call(grid.arrange, c(plots, list(nrow = 2)))
 })
 ```
