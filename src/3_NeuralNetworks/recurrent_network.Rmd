@@ -113,7 +113,7 @@ with(tf$Session() %as% sess, {
       acc_val = sess$run(acc_fun, feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]]))
       loss_val = sess$run(loss_fun, feed_dict = dict(x = batch_data[[1]], y = batch_data[[2]]))
       cat(paste0("Step: ", format(step, width = 5),
-                 " batch.loss=", format(loss_val, width = 8),
+                 " batch.loss=", format(loss_val, width = 10),
                  " accuracy=", format(acc_val, width = 8)), "\n")
     }
 
