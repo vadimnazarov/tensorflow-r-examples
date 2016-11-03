@@ -11,7 +11,7 @@ This is an R version of the wonderful TensorFlow example made by [Aymeric Damien
 
 Original TensorFlow example notebook: [link](https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/2_BasicModels/linear_regression.ipynb)
 
-Code for this document: [link](https://github.com/vadimnazarov/tensorflow-r-examples/2_BasicModels/linear_regression.Rmd)
+Code for this document: [link](https://github.com/vadimnazarov/tensorflow-r-examples/src/2_BasicModels/linear_regression.Rmd)
 
 TensorFlow R examples website: [link](https://vadimnazarov.github.io/tensorflow-r-examples/)
 
