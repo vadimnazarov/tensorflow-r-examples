@@ -98,7 +98,7 @@ acc_fun = tf$reduce_mean(tf$cast(y_true, tf$float32))
 init = tf$initialize_all_variables()
 ```
 
-#### Launch the L1 distance graph and print the resulting accuracy
+#### Launch the graph and print the resulting accuracy
 ```{r run, fig.align="center", fig.width=16, fig.height=3}
 with(tf$Session() %as% sess, {
   sess$run(init)

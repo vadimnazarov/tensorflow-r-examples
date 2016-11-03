@@ -83,7 +83,7 @@ init = tf$initialize_all_variables()
 acc = .0
 ```
 
-#### Launch the L1 distance graph and print the resulting accuracy
+#### Launch the graph and print the resulting accuracy
 ```{r run}
 with(tf$Session() %as% sess, {
   sess$run(init)

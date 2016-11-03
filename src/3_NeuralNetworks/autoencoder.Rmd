@@ -90,7 +90,7 @@ optim_fun = tf$train$RMSPropOptimizer(learning_rate = learning_rate)$minimize(lo
 init = tf$initialize_all_variables()
 ```
 
-#### Launch the L1 distance graph and print the resulting accuracy
+#### Launch the graph and print the resulting accuracy
 ```{r run, fig.align="center", fig.width=16, fig.height=3}
 with(tf$Session() %as% sess, {
   sess$run(init)
