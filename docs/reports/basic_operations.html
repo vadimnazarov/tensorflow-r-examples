@@ -117,7 +117,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore"><center>
 <h1>
-Nearest neighbor model in R using TensorFlow
+Basic operations in R TensorFlow
 </h1>
 </center></h1>
 <h4 class="author"><em><center>
@@ -132,8 +132,8 @@ Vadim I. Nazarov
 <div id="preface" class="section level4">
 <h4>Preface</h4>
 <p>This is an R version of the wonderful TensorFlow example made by <a href="https://github.com/aymericdamien">Aymeric Damien</a> in <a href="https://github.com/aymericdamien/TensorFlow-Examples/">this project</a>.</p>
-<p>Original TensorFlow example notebook: <a href="https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/2_BasicModels/nearest_neighbor.ipynb">link</a></p>
-<p>Code for this document: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/src/2_BasicModels/nearest_neighbor.Rmd">link</a></p>
+<p>Original TensorFlow example notebook: <a href="https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/1_Introduction/basic_operations.ipynb">link</a></p>
+<p>Code for this document: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/src/1_Introduction/basic_operations.Rmd">link</a></p>
 <p>TensorFlow R examples website: <a href="https://vadimnazarov.github.io/tensorflow-r-examples/">link</a></p>
 <p>TensorFlow R examples GitHub: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/">link</a></p>
 </div>
@@ -145,82 +145,75 @@ Vadim I. Nazarov
 <h4>Libraries</h4>
 <pre class="r"><code>library(tensorflow)</code></pre>
 </div>
-<div id="parameters" class="section level4">
-<h4>Parameters</h4>
-<pre class="r"><code>train_size = 5000
-test_size = 200
-n_features = 784L</code></pre>
+<div id="operations-with-constants" class="section level4">
+<h4>Operations with constants</h4>
+<pre class="r"><code># The value returned by the constructor represents 
+# the output of the Constant operation.
+a = tf$constant(2)
+b = tf$constant(3)</code></pre>
 </div>
-<div id="training-data" class="section level4">
-<h4>Training data</h4>
-<pre class="r"><code>input_data = tf$contrib$learn$datasets$mnist
-mnist = input_data$read_data_sets(&quot;./tmp/data&quot;, one_hot = T)
-
-train_data = mnist$train$next_batch(train_size)
-x_train = train_data[[1]]
-y_train = train_data[[2]]
-
-test_data = mnist$test$next_batch(test_size)
-x_test = test_data[[1]]
-y_test = test_data[[2]]</code></pre>
-</div>
-<div id="tensorflow-graph-input" class="section level4">
-<h4>TensorFlow graph input</h4>
-<pre class="r"><code>x_src = tf$placeholder(tf$float32, shape(NULL, n_features))
-x_tgt = tf$placeholder(tf$float32, shape(n_features))</code></pre>
-</div>
-<div id="nearest-neighbors-calculation-using-l1-distance" class="section level4">
-<h4>Nearest neighbors calculation using L1 distance</h4>
-<pre class="r"><code>distance = tf$reduce_sum(tf$abs(x_src - x_tgt), reduction_indices = 1L)
-# L2 distance will look like this
-# distance = tf$reduce_sum((x_src - x_tgt) ^ 2, reduction_indices = 1L)</code></pre>
-</div>
-<div id="nearest-neighbors-model-description" class="section level4">
-<h4>Nearest neighbors model description</h4>
-<pre class="r"><code>nn_model = tf$arg_min(distance, 0L)</code></pre>
-</div>
-<div id="initialise-all-variables" class="section level4">
-<h4>Initialise all variables</h4>
-<pre class="r"><code>init = tf$initialize_all_variables()
-acc = .0</code></pre>
-</div>
-<div id="launch-the-l1-distance-graph-and-print-the-resulting-accuracy" class="section level4">
-<h4>Launch the L1 distance graph and print the resulting accuracy</h4>
-<pre class="r"><code>with(tf$Session() %as% sess, {
-  sess$run(init)
-  
-  # For every object
-  for (i in 1:nrow(x_test)) {
-    # Get the nearest object's class
-    nn_index = sess$run(nn_model, feed_dict = dict(x_src = x_train, x_tgt = x_test[i,])) + 1
-    pred = which.max(y_train[nn_index, ]) - 1
-    real = which.max(y_test[i, ]) - 1
-    if (pred == real) {
-      acc = acc + 1 / nrow(x_test)
-    } else {
-      cat(&quot;test no. &quot;, i, &quot; pred: &quot;, pred, &quot; true: &quot;, real, &quot;\n&quot;)
-    }
-  }
-  
-  cat(&quot;Accuracy: &quot;, acc, &quot;\n&quot;)
+<div id="launch-i.e.-compute-execute-the-default-graph" class="section level4">
+<h4>Launch (i.e., compute / execute) the default graph</h4>
+<pre class="r"><code># &quot;with&quot; allows us to initialize (and later remove) the session &quot;sess&quot; only for the code
+# in the inner code block and don't ruin any external variables.
+with(tf$Session() %as% sess, {
+  cat(&quot;a = 2, b = 3\n&quot;)
+  cat(&quot;Addition with constants: &quot;, sess$run(a + b), &quot;\n&quot;)
+  cat(&quot;Multiplication with constants: &quot;, sess$run(a * b), &quot;\n&quot;)
 })</code></pre>
-<pre><code>## test no.  9  pred:  8  true:  5 
-## test no.  12  pred:  0  true:  6 
-## test no.  17  pred:  4  true:  9 
-## test no.  44  pred:  1  true:  2 
-## test no.  74  pred:  7  true:  9 
-## test no.  78  pred:  7  true:  2 
-## test no.  116  pred:  9  true:  4 
-## test no.  117  pred:  9  true:  4 
-## test no.  120  pred:  7  true:  2 
-## test no.  143  pred:  2  true:  3 
-## test no.  150  pred:  1  true:  2 
-## test no.  171  pred:  9  true:  4 
-## test no.  176  pred:  1  true:  7 
-## test no.  185  pred:  2  true:  8 
-## test no.  194  pred:  4  true:  9 
-## test no.  196  pred:  1  true:  3 
-## Accuracy:  0.92</code></pre>
+<pre><code>## a = 2, b = 3
+## Addition with constants:  5 
+## Multiplication with constants:  6</code></pre>
+</div>
+<div id="operations-with-variables---graph-inputs" class="section level4">
+<h4>Operations with variables - graph inputs</h4>
+<pre class="r"><code># The value returned by the constructor represents 
+# the output of the Variable operation. This is the &quot;boxes&quot;
+# for the input data.
+a = tf$placeholder(tf$int16)
+b = tf$placeholder(tf$int16)
+
+# Now define what we will do with this variables.
+add_fun_long = tf$add(a, b)
+# The TensorFlow R library provides nice straightforward aliases 
+# for TensorFlow operations like addition, multiplication, etc.
+# More info here: https://rstudio.github.io/tensorflow/using_tensorflow_api.html
+add_fun_short = a + b
+mul_fun_long = tf$mul(a, b)
+mul_fun_short = a * b</code></pre>
+</div>
+<div id="launch-the-default-graph" class="section level4">
+<h4>Launch the default graph</h4>
+<pre class="r"><code>with(tf$Session() %as% sess, {
+  cat(&quot;Addition with variables #1: &quot;, sess$run(add_fun_long, feed_dict = dict(a = 3, b = 5)), &quot;\n&quot;)
+  cat(&quot;Addition with variables #2: &quot;, sess$run(add_fun_short, feed_dict = dict(a = 3, b = 5)), &quot;\n&quot;)
+  cat(&quot;Multiplication with variables #1: &quot;, sess$run(mul_fun_long, feed_dict = dict(a = 3, b = 5)), &quot;\n&quot;)
+  cat(&quot;Multiplication with variables #2: &quot;, sess$run(mul_fun_short, feed_dict = dict(a = 3, b = 5)), &quot;\n&quot;)
+})</code></pre>
+<pre><code>## Addition with variables #1:  8 
+## Addition with variables #2:  8 
+## Multiplication with variables #1:  15 
+## Multiplication with variables #2:  15</code></pre>
+</div>
+<div id="matrix-multiplication" class="section level4">
+<h4>Matrix multiplication</h4>
+<pre class="r"><code># Matrix Multiplication from TensorFlow official tutorial
+
+# 1x2 matrix
+matrix1 = tf$constant(matrix(c(3, 3), nrow = 1))
+# 2x1 matrix
+matrix2 = tf$constant(matrix(c(2, 2), nrow = 2))
+
+# MATrix MULtiplication operation
+matmul = tf$matmul(matrix1, matrix2)</code></pre>
+</div>
+<div id="launch-the-default-graph-1" class="section level4">
+<h4>Launch the default graph</h4>
+<pre class="r"><code>with(tf$Session() %as% sess, {
+  print(sess$run(matmul))
+})</code></pre>
+<pre><code>##      [,1]
+## [1,]   12</code></pre>
 </div>
 
 

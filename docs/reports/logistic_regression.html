@@ -93,6 +93,7 @@ button.code-folding-btn:focus {
 </style>
 
 
+
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
@@ -123,11 +124,6 @@ Logistic regression model in R using TensorFlow
 <h3>
 Vadim I. Nazarov
 </h3>
-</center>
-<center>
-<h4>
-<a href="mailto:vdm.nazarov@gmail.com">vdm.nazarov@gmail.com</a>
-</h4>
 </center></em></h4>
 
 </div>
@@ -137,7 +133,7 @@ Vadim I. Nazarov
 <h4>Preface</h4>
 <p>This is an R version of the wonderful TensorFlow example made by <a href="https://github.com/aymericdamien">Aymeric Damien</a> in <a href="https://github.com/aymericdamien/TensorFlow-Examples/">this project</a>.</p>
 <p>Original TensorFlow example notebook: <a href="https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/2_BasicModels/logistic_regression.ipynb">link</a></p>
-<p>Code for this document: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/2_BasicModels/logistic_regression.Rmd">link</a></p>
+<p>Code for this document: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/src/2_BasicModels/logistic_regression.Rmd">link</a></p>
 <p>TensorFlow R examples website: <a href="https://vadimnazarov.github.io/tensorflow-r-examples/">link</a></p>
 <p>TensorFlow R examples GitHub: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/">link</a></p>
 </div>
@@ -224,33 +220,33 @@ b = tf$Variable(tf$zeros(shape(n_classes)))</code></pre>
   acc = tf$reduce_mean(tf$cast(corr_pred, tf$float32))
   cat(&quot;Accuracy: &quot;, acc$eval(dict(x = mnist$test$images[1:test_size, ], y = mnist$test$labels[1:test_size, ])), &quot;\n&quot;)
 })</code></pre>
-<pre><code>## Epoch:  1 avg.loss= 0.5373176 
-## Epoch:  2 avg.loss= 0.3600599 
-## Epoch:  3 avg.loss= 0.3317508 
-## Epoch:  4 avg.loss= 0.3155213 
-## Epoch:  5 avg.loss= 0.3064951 
-## Epoch:  6 avg.loss= 0.2989612 
-## Epoch:  7 avg.loss=  0.293584 
-## Epoch:  8 avg.loss= 0.2896606 
-## Epoch:  9 avg.loss= 0.2853713 
-## Epoch: 10 avg.loss= 0.2833603 
-## Epoch: 11 avg.loss= 0.2807074 
-## Epoch: 12 avg.loss= 0.2774754 
-## Epoch: 13 avg.loss= 0.2757857 
-## Epoch: 14 avg.loss= 0.2742733 
-## Epoch: 15 avg.loss= 0.2722966 
-## Epoch: 16 avg.loss= 0.2711232 
-## Epoch: 17 avg.loss=  0.269739 
-## Epoch: 18 avg.loss= 0.2682861 
-## Epoch: 19 avg.loss= 0.2672507 
-## Epoch: 20 avg.loss= 0.2660087 
-## Epoch: 21 avg.loss= 0.2641929 
-## Epoch: 22 avg.loss= 0.2650411 
-## Epoch: 23 avg.loss= 0.2630629 
-## Epoch: 24 avg.loss= 0.2625893 
-## Epoch: 25 avg.loss=  0.262228 
-## Overall loss= 0.3433074 
-## Accuracy:  0.8993334</code></pre>
+<pre><code>## Epoch:  1 avg.loss= 0.5374047 
+## Epoch:  2 avg.loss= 0.3598986 
+## Epoch:  3 avg.loss= 0.3311498 
+## Epoch:  4 avg.loss= 0.3161377 
+## Epoch:  5 avg.loss= 0.3059192 
+## Epoch:  6 avg.loss= 0.2995504 
+## Epoch:  7 avg.loss=  0.294384 
+## Epoch:  8 avg.loss= 0.2888625 
+## Epoch:  9 avg.loss= 0.2856868 
+## Epoch: 10 avg.loss= 0.2830499 
+## Epoch: 11 avg.loss= 0.2805914 
+## Epoch: 12 avg.loss= 0.2775984 
+## Epoch: 13 avg.loss= 0.2759919 
+## Epoch: 14 avg.loss= 0.2740894 
+## Epoch: 15 avg.loss=  0.271988 
+## Epoch: 16 avg.loss= 0.2714624 
+## Epoch: 17 avg.loss= 0.2698629 
+## Epoch: 18 avg.loss= 0.2680898 
+## Epoch: 19 avg.loss= 0.2675211 
+## Epoch: 20 avg.loss= 0.2658012 
+## Epoch: 21 avg.loss= 0.2654709 
+## Epoch: 22 avg.loss=  0.263763 
+## Epoch: 23 avg.loss= 0.2636582 
+## Epoch: 24 avg.loss= 0.2620056 
+## Epoch: 25 avg.loss=   0.26166 
+## Overall loss= 0.3426665 
+## Accuracy:  0.8986667</code></pre>
 </div>
 
 
@@ -264,6 +260,7 @@ b = tf$Variable(tf$zeros(shape(n_classes)))</code></pre>
 $(document).ready(function () {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 });
+
 
 </script>
 

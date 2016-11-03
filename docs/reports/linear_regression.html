@@ -93,6 +93,7 @@ button.code-folding-btn:focus {
 </style>
 
 
+
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
@@ -123,11 +124,6 @@ Linear regression model in R using TensorFlow
 <h3>
 Vadim I. Nazarov
 </h3>
-</center>
-<center>
-<h4>
-<a href="mailto:vdm.nazarov@gmail.com">vdm.nazarov@gmail.com</a>
-</h4>
 </center></em></h4>
 
 </div>
@@ -137,7 +133,7 @@ Vadim I. Nazarov
 <h4>Preface</h4>
 <p>This is an R version of the wonderful TensorFlow example made by <a href="https://github.com/aymericdamien">Aymeric Damien</a> in <a href="https://github.com/aymericdamien/TensorFlow-Examples/">this project</a>.</p>
 <p>Original TensorFlow example notebook: <a href="https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/2_BasicModels/linear_regression.ipynb">link</a></p>
-<p>Code for this document: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/2_BasicModels/linear_regression.Rmd">link</a></p>
+<p>Code for this document: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/src/2_BasicModels/linear_regression.Rmd">link</a></p>
 <p>TensorFlow R examples website: <a href="https://vadimnazarov.github.io/tensorflow-r-examples/">link</a></p>
 <p>TensorFlow R examples GitHub: <a href="https://github.com/vadimnazarov/tensorflow-r-examples/">link</a></p>
 </div>
@@ -231,24 +227,24 @@ b = tf$Variable(tf$zeros(shape(1L)), name = &quot;bias&quot;)</code></pre>
                  yend = y_end)) +
   theme_bw()
 })</code></pre>
-<pre><code>## Epoch:   50 loss=0.09023503 W=0.2815655 b=0.4650489
-## Epoch:  100 loss=0.08403776 W=0.2594244 b=0.632445
-## Epoch:  150 loss=0.08221086 W=0.2478261 b=0.7201324
-## Epoch:  200 loss=0.08164334 W=0.2417505 b=0.7660664
-## Epoch:  250 loss= 0.0814529 W=0.2385681 b=0.7901269
-## Epoch:  300 loss=0.08138249 W=0.2369011 b=0.8027303
-## Epoch:  350 loss=0.08135365 W=0.2360277 b=0.8093333
-## Epoch:  400 loss=0.08134076 W=0.2355702 b=0.8127924
-## Epoch:  450 loss= 0.0813346 W=0.2353305 b=0.8146043
-## Epoch:  500 loss=0.08133155 W=0.2352051 b=0.8155525
-## Epoch:  550 loss=0.08133001 W=0.2351393 b=0.8160499
-## Epoch:  600 loss=0.08132919 W=0.235105 b=0.8163091
-## Epoch:  650 loss=0.08132879 W=0.2350867 b=0.8164477
-## Epoch:  700 loss=0.08132854 W=0.2350772 b=0.8165195
-## Epoch:  750 loss=0.08132845 W=0.2350727 b=0.8165533
-## Epoch:  800 loss=0.08132839 W= 0.23507 b=0.8165742
-## Epoch:  850 loss=0.08132834 W=0.2350687 b=0.8165838
-## Epoch:  900 loss=0.08132835 W=0.235068 b=0.8165887
+<pre><code>## Epoch:   50 loss=0.09568738 W=0.2949093 b=0.3641648
+## Epoch:  100 loss=0.08561009 W=0.2664142 b=0.5795988
+## Epoch:  150 loss= 0.0826822 W=0.2514877 b=0.6924496
+## Epoch:  200 loss=0.08179358 W=0.2436687 b=0.7515646
+## Epoch:  250 loss=0.08150509 W=0.2395729 b=0.7825301
+## Epoch:  300 loss=0.08140255 W=0.2374273 b=0.7987516
+## Epoch:  350 loss=0.08136218 W=0.2363034 b=0.807249
+## Epoch:  400 loss=0.08134465 W=0.2357146 b=0.8117004
+## Epoch:  450 loss=0.08133652 W=0.2354062 b=0.8140317
+## Epoch:  500 loss= 0.0813325 W=0.2352447 b=0.8152531
+## Epoch:  550 loss= 0.0813305 W=0.2351601 b=0.8158929
+## Epoch:  600 loss=0.08132944 W=0.2351159 b=0.8162273
+## Epoch:  650 loss=0.08132889 W=0.2350926 b=0.8164036
+## Epoch:  700 loss=0.08132863 W=0.2350802 b=0.816497
+## Epoch:  750 loss=0.08132849 W=0.2350742 b=0.8165423
+## Epoch:  800 loss= 0.0813284 W=0.2350709 b=0.8165674
+## Epoch:  850 loss=0.08132835 W=0.235069 b=0.8165814
+## Epoch:  900 loss=0.08132835 W=0.2350684 b=0.8165863
 ## Epoch:  950 loss=0.08132835 W=0.2350679 b=0.8165899
 ## Epoch: 1000 loss=0.08132835 W=0.2350679 b=0.8165899
 ## Resulting loss=  14.22173 W=0.2350679 b=0.8165899</code></pre>
@@ -266,6 +262,7 @@ b = tf$Variable(tf$zeros(shape(1L)), name = &quot;bias&quot;)</code></pre>
 $(document).ready(function () {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 });
+
 
 </script>
 

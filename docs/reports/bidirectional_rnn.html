@@ -124,11 +124,6 @@ Bidirectional recurrent neural network (LSTM) model in R using TensorFlow
 <h3>
 Vadim I. Nazarov
 </h3>
-</center>
-<center>
-<h4>
-<a href="mailto:vdm.nazarov@gmail.com">vdm.nazarov@gmail.com</a>
-</h4>
 </center></em></h4>
 
 </div>
@@ -245,27 +240,27 @@ acc_fun = tf$reduce_mean(tf$cast(y_true, tf$float32))</code></pre>
   test_y = batch_data[[2]]
   cat(&quot;Testing accuracy on &quot;, test_size, &quot; images=&quot;, sess$run(acc_fun, feed_dict = dict(x = test_x, y = test_y)))
 })</code></pre>
-<pre><code>## Step:    39 batch.loss= 0.5210181 accuracy=0.859375 
-## Step:    78 batch.loss= 0.3258147 accuracy=0.8984375 
-## Step:   117 batch.loss= 0.2825133 accuracy=0.9140625 
-## Step:   156 batch.loss= 0.1590847 accuracy= 0.96875 
-## Step:   195 batch.loss=  0.262439 accuracy=  0.9375 
-## Step:   234 batch.loss= 0.2855649 accuracy=0.9140625 
-## Step:   273 batch.loss= 0.1713182 accuracy=  0.9375 
-## Step:   312 batch.loss= 0.1305764 accuracy=0.953125 
-## Step:   351 batch.loss=  0.183933 accuracy=0.953125 
-## Step:   390 batch.loss=  0.144227 accuracy=0.9453125 
-## Step:   429 batch.loss=0.03457395 accuracy=0.984375 
-## Step:   468 batch.loss= 0.1152372 accuracy=0.9609375 
-## Step:   507 batch.loss=0.05585841 accuracy=0.9765625 
-## Step:   546 batch.loss=0.08923481 accuracy=0.9765625 
-## Step:   585 batch.loss=0.02943441 accuracy=       1 
-## Step:   624 batch.loss=0.09108604 accuracy= 0.96875 
-## Step:   663 batch.loss=0.08199558 accuracy=0.9609375 
-## Step:   702 batch.loss=0.02439538 accuracy=       1 
-## Step:   741 batch.loss=0.02747245 accuracy=       1 
-## Step:   780 batch.loss=0.02690629 accuracy=0.9921875 
-## Testing accuracy on  1000  images= 0.963</code></pre>
+<pre><code>## Step:    39 batch.loss= 0.4826899 accuracy=0.859375 
+## Step:    78 batch.loss= 0.3105199 accuracy=0.8984375 
+## Step:   117 batch.loss= 0.2729715 accuracy= 0.90625 
+## Step:   156 batch.loss= 0.1445085 accuracy=0.9453125 
+## Step:   195 batch.loss= 0.2121332 accuracy=0.9453125 
+## Step:   234 batch.loss= 0.1942721 accuracy=0.921875 
+## Step:   273 batch.loss= 0.1882112 accuracy=0.9296875 
+## Step:   312 batch.loss= 0.1522967 accuracy=0.953125 
+## Step:   351 batch.loss= 0.1519162 accuracy=0.9609375 
+## Step:   390 batch.loss= 0.1442373 accuracy=0.9609375 
+## Step:   429 batch.loss=0.02160615 accuracy=0.9921875 
+## Step:   468 batch.loss= 0.1636398 accuracy=0.953125 
+## Step:   507 batch.loss=0.05483414 accuracy=0.984375 
+## Step:   546 batch.loss=0.09940213 accuracy=0.9765625 
+## Step:   585 batch.loss=0.03218599 accuracy=0.9921875 
+## Step:   624 batch.loss=0.06125845 accuracy=0.984375 
+## Step:   663 batch.loss=0.02427488 accuracy=       1 
+## Step:   702 batch.loss=0.05211671 accuracy=0.984375 
+## Step:   741 batch.loss=0.07059392 accuracy=0.984375 
+## Step:   780 batch.loss= 0.1907175 accuracy=0.9609375 
+## Testing accuracy on  1000  images= 0.965</code></pre>
 </div>
 
 
