@@ -1,0 +1,93 @@
+---
+title: '<center> <h1>Basic operations in R TensorFlow</h1></center>'
+author: '<center> <h3>Vadim I. Nazarov</h3> </center> '
+output: 
+  html_document: 
+    theme: spacelab
+---
+
+#### Preface
+This is an R version of the wonderful TensorFlow example made by [Aymeric Damien](https://github.com/aymericdamien) in [this project](https://github.com/aymericdamien/TensorFlow-Examples/).
+
+Original TensorFlow example notebook: [link](https://github.com/aymericdamien/TensorFlow-Examples/blob/master/notebooks/1_Introduction/basic_operations.ipynb)
+
+Code for this document: [link](https://github.com/vadimnazarov/tensorflow-r-examples/src/1_Introduction/basic_operations.Rmd)
+
+TensorFlow R examples website: [link](https://vadimnazarov.github.io/tensorflow-r-examples/)
+
+TensorFlow R examples GitHub: [link](https://github.com/vadimnazarov/tensorflow-r-examples/)
+
+#### Installation
+Installation instructions for TensorFlow R package: [link](https://rstudio.github.io/tensorflow/)
+
+#### Libraries
+```{r libs}
+library(tensorflow)
+```
+
+#### Operations with constants
+```{r const}
+# The value returned by the constructor represents 
+# the output of the Constant operation.
+a = tf$constant(2)
+b = tf$constant(3)
+```
+
+#### Launch (i.e., compute / execute) the default graph
+```{r defgraph}
+# "with" allows us to initialize (and later remove) the session "sess" only for the code
+# in the inner code block and don't ruin any external variables.
+with(tf$Session() %as% sess, {
+  cat("a = 2, b = 3\n")
+  cat("Addition with constants: ", sess$run(a + b), "\n")
+  cat("Multiplication with constants: ", sess$run(a * b), "\n")
+})
+```
+
+#### Operations with variables - graph inputs
+```{r variables}
+# The value returned by the constructor represents 
+# the output of the Variable operation. This is the "boxes"
+# for the input data.
+a = tf$placeholder(tf$int16)
+b = tf$placeholder(tf$int16)
+
+# Now define what we will do with this variables.
+add_fun_long = tf$add(a, b)
+# The TensorFlow R library provides nice straightforward aliases 
+# for TensorFlow operations like addition, multiplication, etc.
+# More info here: https://rstudio.github.io/tensorflow/using_tensorflow_api.html
+add_fun_short = a + b
+mul_fun_long = tf$mul(a, b)
+mul_fun_short = a * b
+```
+
+#### Launch the default graph
+```{r defgraph2}
+with(tf$Session() %as% sess, {
+  cat("Addition with variables #1: ", sess$run(add_fun_long, feed_dict = dict(a = 3, b = 5)), "\n")
+  cat("Addition with variables #2: ", sess$run(add_fun_short, feed_dict = dict(a = 3, b = 5)), "\n")
+  cat("Multiplication with variables #1: ", sess$run(mul_fun_long, feed_dict = dict(a = 3, b = 5)), "\n")
+  cat("Multiplication with variables #2: ", sess$run(mul_fun_short, feed_dict = dict(a = 3, b = 5)), "\n")
+})
+```
+
+#### Matrix multiplication
+```{r matrix}
+# Matrix Multiplication from TensorFlow official tutorial
+
+# 1x2 matrix
+matrix1 = tf$constant(matrix(c(3, 3), nrow = 1))
+# 2x1 matrix
+matrix2 = tf$constant(matrix(c(2, 2), nrow = 2))
+
+# MATrix MULtiplication operation
+matmul = tf$matmul(matrix1, matrix2)
+```
+
+#### Launch the default graph
+```{r defgraph3}
+with(tf$Session() %as% sess, {
+  print(sess$run(matmul))
+})
+```
