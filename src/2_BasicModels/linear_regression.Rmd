@@ -1,6 +1,6 @@
 ---
 title: '<center> <h1>Linear regression model in R using TensorFlow</h1></center>'
-author: '<center> <h3>Vadim I. Nazarov</h3> </center> <center> <h4><vdm.nazarov@gmail.com></h4> </center>'
+author: '<center> <h3>Vadim I. Nazarov</h3> </center> '
 output: 
   html_document: 
     theme: spacelab
